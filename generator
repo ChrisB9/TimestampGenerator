@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use cbenco\TimestampGenerator\Cli;
+
+if (version_compare('7.2.0', PHP_VERSION, '>')) {
+    fwrite(STDERR, 'The Timestamp Generator is intended for php >= 7.2' . PHP_EOL);
+    die();
+}
+
+call_user_func(static function () {
+    $firstVendorAutoloadFile = null;
+    $autoloadExists = fn(string $dir) => file_exists(__DIR__ . $dir . '/autoload.php') ? __DIR__ . $dir . '/autoload.php' : false;
+
+    foreach (['/..', '/../vendor', '/vendor', '/../..',] as $dir) {
+        if ($firstVendorAutoloadFile = $autoloadExists($dir)) {
+            break;
+        }
+    }
+
+    if (!$firstVendorAutoloadFile) {
+        fwrite(STDERR, 'no autoloading file found' . PHP_EOL);
+        die();
+    }
+
+    require $firstVendorAutoloadFile;
+
+    (new Cli())->generator();
+});

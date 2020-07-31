@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  web:
+    image: chrisb9/php8-nginx-xdebug:latest
+    volumes:
+      - .:/app
+      - ~/.ssh:/home/application/.ssh
+      - ~/.gitconfig:/home/application/.gitconfig
+    environment:
+      - VIRTUAL_HOST=timestamp-generator.$DOMAIN
+
+networks:
+  default:
+    external:
+      name: global
